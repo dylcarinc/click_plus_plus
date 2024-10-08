@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1079471952758",
+    "project_id": "clickplusplus-75d64",
+    "storage_bucket": "clickplusplus-75d64.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079471952758:android:29b4e13011883c9a21a057",
+        "android_client_info": {
+          "package_name": "com.clickplusplus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxG0gL2A_Bthf949TZ0iI8jQWIB5WHQ74"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
