@@ -7,15 +7,15 @@ import 'package:click_plus_plus/buttons/page_button.dart';
 
 
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class GamePage extends StatefulWidget {
+  const GamePage({super.key});
 
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<GamePage> createState() => _GamePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _GamePageState extends State<GamePage> {
   // Total count is temporary, need to be able to pull firebase info
   int _totalCount = 0;
 
