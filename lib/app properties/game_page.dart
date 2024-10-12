@@ -30,17 +30,42 @@ void _NavigatePages() {
   // Just went ahead and made this for future use
 }
 
+
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Cick++")),
       body: Column(
-        children: [const Row(
+        children: [Row(
           children: [
-            Positioned(top: 10, left: 10, 
-            child: IconButton(onPressed: null, 
-            icon: Icon(Icons.settings))),
-          ],
-          ),
+            // code for a pop up menu button
+            PopupMenuButton<String>(
+              icon:  const Icon(Icons.settings),
+              onSelected: (String result) {
+                  // Handle menu item selection
+                  switch (result) {
+                    case 'option1':
+                      // Handles option 1
+                      break;
+                    case 'option2':
+                      // Handles option 2
+                      break;
+                  }
+                },
+              // this section builds the items within the popup menu
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  const PopupMenuItem<String>(
+                    value: 'option1',
+                    child: Text('Option 1'),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: 'option2',
+                    child: Text('Option 2'),
+                  ),
+                ],
+              ),
+            ]
+            ),
           Expanded(
             child: Center(
               child: Column(
@@ -57,7 +82,7 @@ void _NavigatePages() {
             ),
           ),
         ],
-      )
+      ),
     );
   }
 }
