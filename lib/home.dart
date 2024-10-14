@@ -13,11 +13,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _score = 0;
+  String _name = "";
 
   @override
   void initState() {
     super.initState();
     _loadScore();
+    _getName();
   }
 
   Future<void> _loadScore() async {
@@ -34,6 +36,29 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
   }
+   Future<void> _getName() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      if (doc.exists && doc.data()?['name'] != null) {
+        setState(() {
+        _name = doc.data()?['name'] ?? "";});
+      }
+      else{
+        setState(() {
+
+        _name = "false";});
+      }
+    }
+    else{
+      setState(() {
+
+        _name = "false";});
+    }
+  }
 
   Future<void> _incrementScore() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -46,9 +71,19 @@ class _HomeScreenState extends State<HomeScreen> {
       }, SetOptions(merge: true));
     }
   }
+    Future<void> _setName(String name) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'name': name,
+      }, SetOptions(merge: true));
+      _name = name;
+    }
+  }
+
 
   @override
-  Widget build(BuildContext context) {
+  Widget build (BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
@@ -87,10 +122,39 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Center(
         child: ElevatedButton(
-          onPressed: _incrementScore,
+          onPressed: () {
+            final myController = TextEditingController();
+            if(_name == "false" || _name == ""){
+              showDialog(context: context,
+              builder: (BuildContext context) => AlertDialog(
+                title: const Text("Please enter your name."),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                 children: [
+                  TextField(
+                    controller: myController,
+                  ),
+                  ElevatedButton(
+                    onPressed:() => {
+                    _setName(myController.text),
+                    Navigator.pop(context)
+                    }, 
+                    child: const Text("Set Name"))
+                 ]
+                ),
+                ));
+            }
+            else{
+                  _incrementScore();
+                }
+          },
           child: const Text('Increment Score'),
         ),
       ),
     );
   }
+}
+
+extension on Future<DocumentSnapshot<Map<String, dynamic>>> {
+  data() {}
 }
