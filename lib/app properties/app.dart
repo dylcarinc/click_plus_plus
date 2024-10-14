@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../auth_gate.dart';
-import 'game_page.dart';
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       
-      home: const GamePage(),
+      home: const AuthGate(),
     );
   }
 }
