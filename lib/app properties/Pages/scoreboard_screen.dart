@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'user_profile_screen.dart';
+import 'package:click_plus_plus/routing/app_router.dart';
 
 class ScoreboardScreen extends StatelessWidget {
   const ScoreboardScreen({super.key});
@@ -51,15 +51,8 @@ class ScoreboardScreen extends StatelessWidget {
             return ListTile(
               title: Text(data['name'] ?? 'Anonymous'),
               trailing: Text(data['score'].toString()),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        UserProfileScreen(userId: document.id),
-                  ),
-                );
-              },
+              onTap: () => AppRouter.navigateTo(context, AppRouter.userProfile,
+                  arguments: {'userId': document.id}),
             );
           }).toList(),
         );
