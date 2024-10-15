@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:click_plus_plus/routing/app_router.dart';
@@ -107,6 +108,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   case 'option2':
                     // Handles option 2
                     break;
+                  case 'MyAccount':
+                Navigator.push(
+                context,
+                MaterialPageRoute<ProfileScreen>(
+                  builder: (context) => ProfileScreen(
+                    appBar: AppBar(
+                      title: const Text('User Profile'),
+                    ),
+                    actions: [
+                      SignedOutAction((context) {
+                        Navigator.of(context).pop();
+                      })])));
                 }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -117,6 +130,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     const PopupMenuItem<String>(
                       value: 'option2',
                       child: Text('Option 2'),
+                    ),
+                    const PopupMenuItem<String>(
+                      value: 'MyAccount',
+                      child: Text('My Account'),
                     )
                   ])
         ],
