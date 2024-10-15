@@ -1,6 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'user_profile_screen.dart';
+import 'package:click_plus_plus/app properties/routing/app_router.dart';
 
 class ScoreboardScreen extends StatelessWidget {
   const ScoreboardScreen({super.key});
@@ -30,6 +31,11 @@ class ScoreboardScreen extends StatelessWidget {
   }
 
   Widget _buildScoreList(bool onlyFollowing) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      return const Center(
+          child: Text('You must be logged in to view the scoreboard.'));
+    }
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('users')
@@ -44,26 +50,49 @@ class ScoreboardScreen extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        return ListView(
-          children: snapshot.data!.docs.map((DocumentSnapshot document) {
-            Map<String, dynamic> data =
-                document.data()! as Map<String, dynamic>;
-            return ListTile(
-              title: Text(data['name'] ?? 'Anonymous'),
-              trailing: Text(data['score'].toString()),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        UserProfileScreen(userId: document.id),
+        return FutureBuilder<List<String>>(
+          future: _getFollowingList(currentUser.uid),
+          builder: (context, followingSnapshot) {
+            if (followingSnapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final followingList = followingSnapshot.data ?? [];
+
+            final filteredDocs = snapshot.data!.docs.where((doc) {
+              if (!onlyFollowing) return true;
+              return followingList.contains(doc.id);
+            }).toList();
+
+            return ListView.builder(
+              itemCount: filteredDocs.length,
+              itemBuilder: (context, index) {
+                final doc = filteredDocs[index];
+                final data = doc.data() as Map<String, dynamic>;
+                return ListTile(
+                  title: Text(data['name'] ?? 'Anonymous'),
+                  trailing: Text(data['score'].toString()),
+                  onTap: () => AppRouter.navigateTo(
+                    context,
+                    AppRouter.userProfile,
+                    arguments: {'userId': doc.id},
                   ),
                 );
               },
             );
-          }).toList(),
+          },
         );
       },
     );
   }
+
+  Future<List<String>> _getFollowingList(String userId) async {
+    final followingDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('following')
+        .get();
+    return followingDoc.docs.map((doc) => doc.id).toList();
+  }
 }
+

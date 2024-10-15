@@ -38,20 +38,18 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   void _toggleFollow() async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
+      final followingRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .collection('following')
+          .doc(widget.userId);
+
       if (_isFollowing) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(currentUser.uid)
-            .collection('following')
-            .doc(widget.userId)
-            .delete();
+        await followingRef.delete();
       } else {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(currentUser.uid)
-            .collection('following')
-            .doc(widget.userId)
-            .set({});
+        await followingRef.set({
+          'timestamp': FieldValue.serverTimestamp(),
+        });
       }
       setState(() {
         _isFollowing = !_isFollowing;
