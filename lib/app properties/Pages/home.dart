@@ -1,11 +1,11 @@
 import 'package:click_plus_plus/app%20properties/theme_provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:click_plus_plus/app properties/routing/app_router.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
-
+import 'package:click_plus_plus/firebase_interface.dart';
+import 'package:click_plus_plus/widgets/custom_button.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,7 +20,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool _isChanged = false;
 
-
   @override
   void initState() {
     super.initState();
@@ -29,9 +28,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadScore() async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = firebase.authInstance.currentUser;
     if (user != null) {
-      final doc = await FirebaseFirestore.instance
+      final doc = await firebase.firestoreInstance
           .collection('users')
           .doc(user.uid)
           .get();
@@ -44,9 +43,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _getName() async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = firebase.authInstance.currentUser;
     if (user != null) {
-      final doc = await FirebaseFirestore.instance
+      final doc = await firebase.firestoreInstance
           .collection('users')
           .doc(user.uid)
           .get();
@@ -67,27 +66,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _incrementScore() async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = firebase.authInstance.currentUser;
     if (user != null) {
       setState(() {
         _score++;
       });
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      await firebase.firestoreInstance.collection('users').doc(user.uid).set({
         'score': _score,
       }, SetOptions(merge: true));
     }
   }
 
   Future<void> _setName(String name) async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = firebase.authInstance.currentUser;
     if (user != null) {
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      await firebase.firestoreInstance.collection('users').doc(user.uid).set({
         'name': name,
       }, SetOptions(merge: true));
       _name = name;
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -102,26 +100,26 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Text('$_score', style: const TextStyle(fontSize: 20)),
           ),
           PopupMenuButton(
-
               icon: const Icon(Icons.settings),
               onSelected: (String result) {
                 // Handle menu item selection
                 switch (result) {
                   case 'themeToggle':
                     break;
-                   
+
                   case 'MyAccount':
-                Navigator.push(
-                context,
-                MaterialPageRoute<ProfileScreen>(
-                  builder: (context) => ProfileScreen(
-                    appBar: AppBar(
-                      title: const Text('User Profile'),
-                    ),
-                    actions: [
-                      SignedOutAction((context) {
-                        Navigator.of(context).pop();
-                      })])));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute<ProfileScreen>(
+                            builder: (context) => ProfileScreen(
+                                    appBar: AppBar(
+                                      title: const Text('User Profile'),
+                                    ),
+                                    actions: [
+                                      SignedOutAction((context) {
+                                        Navigator.of(context).pop();
+                                      })
+                                    ])));
                 }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -139,8 +137,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   setState(() {
                                     _isChanged = value;
                                   });
-                                  Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
-                                },),],);
+                                  Provider.of<ThemeProvider>(context,
+                                          listen: false)
+                                      .toggleTheme();
+                                },
+                              ),
+                            ],
+                          );
                         },
                       ),
                     ),
@@ -148,38 +151,46 @@ class _HomeScreenState extends State<HomeScreen> {
                       value: 'MyAccount',
                       child: Text('My Account'),
                     )
-                  ]
-                )
-
+                  ])
         ],
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            final myController = TextEditingController();
-            if (_name == "false" || _name == "") {
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) => AlertDialog(
-                        title: const Text("Please enter your name."),
-                        content:
-                            Column(mainAxisSize: MainAxisSize.min, children: [
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 40),
+            CustomRoundButton(
+              onPressed: () {
+                final myController = TextEditingController();
+                if (_name == "false" || _name == "") {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text("Please enter your name."),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
                           TextField(
                             controller: myController,
                           ),
                           ElevatedButton(
-                              onPressed: () => {
-                                    _setName(myController.text),
-                                    Navigator.pop(context)
-                                  },
-                              child: const Text("Set Name"))
-                        ]),
-                      ));
-            } else {
-              _incrementScore();
-            }
-          },
-          child: const Text('Increment Score'),
+                            onPressed: () {
+                              _setName(myController.text);
+                              Navigator.pop(context);
+                            },
+                            child: const Text("Set Name"),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                } else {
+                  _incrementScore();
+                }
+              },
+              size: 150, // You can adjust the size as needed
+            ),
+          ],
         ),
       ),
     );

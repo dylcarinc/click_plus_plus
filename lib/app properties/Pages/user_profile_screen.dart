@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:click_plus_plus/firebase_interface.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final String userId;
@@ -21,9 +21,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   void _checkIfFollowing() async {
-    final currentUser = FirebaseAuth.instance.currentUser;
+    final currentUser = firebase.authInstance.currentUser;
     if (currentUser != null) {
-      final doc = await FirebaseFirestore.instance
+      final doc = await firebase.firestoreInstance
           .collection('users')
           .doc(currentUser.uid)
           .collection('following')
@@ -36,9 +36,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   void _toggleFollow() async {
-    final currentUser = FirebaseAuth.instance.currentUser;
+    final currentUser = firebase.authInstance.currentUser;
     if (currentUser != null) {
-      final followingRef = FirebaseFirestore.instance
+      final followingRef = firebase.firestoreInstance
           .collection('users')
           .doc(currentUser.uid)
           .collection('following')
@@ -76,6 +76,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
+          if (!snapshot.hasData || !snapshot.data!.exists) {
+            return const Center(child: Text('User not found'));
+          }
 
           Map<String, dynamic> data =
               snapshot.data!.data() as Map<String, dynamic>;
@@ -87,7 +90,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 Text(data['name'] ?? 'Anonymous',
                     style: Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 20),
-                Text('Score: ${data['score']}',
+                Text('Score: ${data['score'] ?? 'N/A'}',
                     style: Theme.of(context).textTheme.headlineSmall),
                 const SizedBox(height: 20),
                 ElevatedButton(
