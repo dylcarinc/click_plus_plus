@@ -1,10 +1,10 @@
-import 'package:click_plus_plus/app%20properties/theme.dart';
 import 'package:click_plus_plus/app%20properties/theme_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:click_plus_plus/app properties/routing/app_router.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -103,22 +103,23 @@ class _HomeScreenState extends State<HomeScreen> {
               onSelected: (String result) {
                 // Handle menu item selection
                 switch (result) {
-                  case 'profilePage':
-                    final user = FirebaseAuth.instance.currentUser;
-                    if (user != null) {
-                      AppRouter.navigateTo(context, AppRouter.userProfile,
-                          arguments: {'userId': user.uid});
-                    }
-                    break;
                   case 'themeToggle':
                     break;
+                   case 'MyAccount':
+                Navigator.push(
+                context,
+                MaterialPageRoute<ProfileScreen>(
+                  builder: (context) => ProfileScreen(
+                    appBar: AppBar(
+                      title: const Text('User Profile'),
+                    ),
+                    actions: [
+                      SignedOutAction((context) {
+                        Navigator.of(context).pop();
+                      })])));
                 }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                    const PopupMenuItem(
-                      value: 'profilePage',
-                      child: Text('Profile'),
-                    ),
                     PopupMenuItem(
                       value: 'themeToggle',
                       child: StatefulBuilder(
@@ -132,16 +133,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 onChanged: (bool value) {
                                   setState(() {
                                     _isChanged = value;
-
                                   });
                                   Provider.of<ThemeProvider>(context, listen: false).themeToggle();
-                                },
-                              ),
-                ],
-              );
-            },
-          ),
-        ),
+                                },),],);
+                        },
+                      ),
+                    ),
+                    const PopupMenuItem<String>(
+                      value: 'MyAccount',
+                      child: Text('My Account'),
+                    )
                   ]
                 )
         ],
