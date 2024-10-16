@@ -1,16 +1,13 @@
-# click_plus_plus
+# Click ++
 
-A new Flutter project.
+A simple flutter game.
 
-## Getting Started
+## Who is the audience?
 
-This project is a starting point for a Flutter application.
+This app is for people who want a simple game to play with freinds and see how many clicks they can get.
 
-A few resources to get you started if this is your first Flutter project:
+## What does this app do?
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Click plus plus is a simple clicker app that allows you to track the number of clicks you have and see how many clicks other users have. You can give yourself a username when you sign in and follow other players.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Screenshots
