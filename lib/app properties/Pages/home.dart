@@ -6,6 +6,7 @@ import 'package:click_plus_plus/app properties/routing/app_router.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -16,7 +17,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _score = 0;
   String _name = "";
+
   bool _isChanged = false;
+
 
   @override
   void initState() {
@@ -99,13 +102,15 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Text('$_score', style: const TextStyle(fontSize: 20)),
           ),
           PopupMenuButton(
+
               icon: const Icon(Icons.settings),
               onSelected: (String result) {
                 // Handle menu item selection
                 switch (result) {
                   case 'themeToggle':
                     break;
-                   case 'MyAccount':
+                   
+                  case 'MyAccount':
                 Navigator.push(
                 context,
                 MaterialPageRoute<ProfileScreen>(
@@ -145,6 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     )
                   ]
                 )
+
         ],
       ),
       body: Center(

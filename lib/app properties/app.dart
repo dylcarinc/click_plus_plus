@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:click_plus_plus/app properties/routing/app_router.dart';
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
@@ -12,6 +11,7 @@ class MyApp extends StatelessWidget {
       theme: Provider.of<ThemeProvider>(context).themeData,
       initialRoute: AppRouter.authGate,
       onGenerateRoute: AppRouter.generateRoute,
+
     );
   }
 }

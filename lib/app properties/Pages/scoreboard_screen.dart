@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:click_plus_plus/app properties/routing/app_router.dart';
 
+
 class ScoreboardScreen extends StatelessWidget {
   const ScoreboardScreen({super.key});
 
