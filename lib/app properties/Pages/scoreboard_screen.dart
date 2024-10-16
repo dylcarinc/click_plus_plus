@@ -1,34 +1,39 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:click_plus_plus/routing/app_router.dart';
+import 'package:click_plus_plus/app properties/routing/app_router.dart';
+
 
 class ScoreboardScreen extends StatelessWidget {
   const ScoreboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Scoreboard'),
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'All Users'),
-              Tab(text: 'Following'),
+      return Scaffold( 
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      body: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Scoreboard'),
+            bottom: const TabBar(
+              tabs: [
+                Tab(text: 'All Users'),
+                Tab(text: 'Following'),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              _buildScoreList(false),
+              _buildScoreList(true),
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            _buildScoreList(false),
-            _buildScoreList(true),
-          ],
-        ),
-      ),
-    );
-  }
+      )
+      );
+    }
+    
 
   Widget _buildScoreList(bool onlyFollowing) {
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -95,3 +100,4 @@ class ScoreboardScreen extends StatelessWidget {
     return followingDoc.docs.map((doc) => doc.id).toList();
   }
 }
+

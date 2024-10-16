@@ -1,8 +1,11 @@
+import 'package:click_plus_plus/app%20properties/theme_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:click_plus_plus/routing/app_router.dart';
+import 'package:click_plus_plus/app properties/routing/app_router.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,6 +17,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _score = 0;
   String _name = "";
+
+  bool _isChanged = false;
+
 
   @override
   void initState() {
@@ -82,9 +88,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: const Text('Home'),
         actions: [
@@ -93,21 +101,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 AppRouter.navigateTo(context, AppRouter.scoreboard),
             child: Text('$_score', style: const TextStyle(fontSize: 20)),
           ),
-          PopupMenuButton<String>(
+          PopupMenuButton(
+
               icon: const Icon(Icons.settings),
               onSelected: (String result) {
                 // Handle menu item selection
                 switch (result) {
-                  case 'profilePage':
-                    final user = FirebaseAuth.instance.currentUser;
-                    if (user != null) {
-                      AppRouter.navigateTo(context, AppRouter.userProfile,
-                          arguments: {'userId': user.uid});
-                    }
+                  case 'themeToggle':
                     break;
-                  case 'option2':
-                    // Handles option 2
-                    break;
+                   
                   case 'MyAccount':
                 Navigator.push(
                 context,
@@ -123,19 +125,32 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                    const PopupMenuItem<String>(
-                      value: 'profilePage',
-                      child: Text('Profile'),
-                    ),
-                    const PopupMenuItem<String>(
-                      value: 'option2',
-                      child: Text('Option 2'),
+                    PopupMenuItem(
+                      value: 'themeToggle',
+                      child: StatefulBuilder(
+                        builder: (BuildContext context, StateSetter setState) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('Theme'),
+                              Switch(
+                                value: _isChanged,
+                                onChanged: (bool value) {
+                                  setState(() {
+                                    _isChanged = value;
+                                  });
+                                  Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+                                },),],);
+                        },
+                      ),
                     ),
                     const PopupMenuItem<String>(
                       value: 'MyAccount',
                       child: Text('My Account'),
                     )
-                  ])
+                  ]
+                )
+
         ],
       ),
       body: Center(
