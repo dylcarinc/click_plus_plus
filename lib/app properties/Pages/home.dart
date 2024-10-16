@@ -134,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   setState(() {
                                     _isChanged = value;
                                   });
-                                  Provider.of<ThemeProvider>(context, listen: false).themeToggle();
+                                  Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
                                 },),],);
                         },
                       ),

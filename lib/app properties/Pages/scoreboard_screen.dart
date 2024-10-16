@@ -8,27 +8,31 @@ class ScoreboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Scoreboard'),
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'All Users'),
-              Tab(text: 'Following'),
+      return Scaffold( 
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      body: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Scoreboard'),
+            bottom: const TabBar(
+              tabs: [
+                Tab(text: 'All Users'),
+                Tab(text: 'Following'),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              _buildScoreList(false),
+              _buildScoreList(true),
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            _buildScoreList(false),
-            _buildScoreList(true),
-          ],
-        ),
-      ),
-    );
-  }
+      )
+      );
+    }
+    
 
   Widget _buildScoreList(bool onlyFollowing) {
     final currentUser = FirebaseAuth.instance.currentUser;
