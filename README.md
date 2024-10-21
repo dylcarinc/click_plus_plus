@@ -1,6 +1,6 @@
 # Click ++
 
-A simple flutter game.
+A simple flutter game with friends!
 
 ## Who is the audience?
 
