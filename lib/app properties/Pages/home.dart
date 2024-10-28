@@ -1,4 +1,5 @@
 import 'package:click_plus_plus/app%20properties/theme_provider.dart';
+import 'package:click_plus_plus/widgets/custom_animated_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:click_plus_plus/app properties/routing/app_router.dart';
@@ -158,37 +159,52 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 40),
-            CustomRoundButton(
-              onPressed: () {
-                final myController = TextEditingController();
-                if (_name == "false" || _name == "") {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) => AlertDialog(
-                      title: const Text("Please enter your name."),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextField(
-                            controller: myController,
+            // SizedBox(height: 40),
+            Stack(
+              children: [
+                Container(
+                  color: Colors.black,
+                  height: 300,
+                  width: 300,
+                ),
+                Positioned(
+                  bottom: 50,
+                  left: 50,
+                  right: 50,
+                  top: 50,
+                  child: CustomRoundButton(
+                    onPressed: () {
+                      final myController = TextEditingController();
+                      if (_name == "false" || _name == "") {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: const Text("Please enter your name."),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                TextField(
+                                  controller: myController,
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    _setName(myController.text);
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text("Set Name"),
+                                )
+                              ],
+                            ),
                           ),
-                          ElevatedButton(
-                            onPressed: () {
-                              _setName(myController.text);
-                              Navigator.pop(context);
-                            },
-                            child: const Text("Set Name"),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                } else {
-                  _incrementScore();
-                }
-              },
-              size: 150, // You can adjust the size as needed
+                        );
+                      } else {
+                        _incrementScore();
+                      }
+                    },
+                    size: 150, // You can adjust the size as needed
+                  ),
+                ),
+              ],
             ),
           ],
         ),
