@@ -20,12 +20,58 @@ class _HomeScreenState extends State<HomeScreen> {
   String _name = "";
 
   bool _isChanged = false;
+  late List<Widget> stackChildren;
 
   @override
   void initState() {
     super.initState();
     _loadScore();
     _getName();
+    stackChildren = [
+      Container(
+        color: Colors.black,
+        height: 300,
+        width: 300,
+      ),
+      Positioned(
+        bottom: 50,
+        left: 50,
+        right: 50,
+        top: 50,
+        child: CustomRoundButton(
+          onPressed: () {
+            final myController = TextEditingController();
+            if (_name == "false" || _name == "") {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text("Please enter your name."),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: myController,
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          _setName(myController.text);
+                          Navigator.pop(context);
+                        },
+                        child: const Text("Set Name"),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            } else {
+              _incrementScore();
+              _spawnIcon();
+            }
+          },
+          size: 150, // You can adjust the size as needed
+        ),
+      ),
+    ];
   }
 
   Future<void> _loadScore() async {
@@ -86,6 +132,11 @@ class _HomeScreenState extends State<HomeScreen> {
       }, SetOptions(merge: true));
       _name = name;
     }
+  }
+
+  void _spawnIcon() {
+    stackChildren
+        .add(Positioned(height: 10, width: 10, child: CustomAnimatedIcon()));
   }
 
   @override
@@ -161,50 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             // SizedBox(height: 40),
             Stack(
-              children: [
-                Container(
-                  color: Colors.black,
-                  height: 300,
-                  width: 300,
-                ),
-                Positioned(
-                  bottom: 50,
-                  left: 50,
-                  right: 50,
-                  top: 50,
-                  child: CustomRoundButton(
-                    onPressed: () {
-                      final myController = TextEditingController();
-                      if (_name == "false" || _name == "") {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                            title: const Text("Please enter your name."),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                TextField(
-                                  controller: myController,
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    _setName(myController.text);
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text("Set Name"),
-                                )
-                              ],
-                            ),
-                          ),
-                        );
-                      } else {
-                        _incrementScore();
-                      }
-                    },
-                    size: 150, // You can adjust the size as needed
-                  ),
-                ),
-              ],
+              children: stackChildren,
             ),
           ],
         ),
