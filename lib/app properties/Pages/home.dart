@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:click_plus_plus/app%20properties/theme_provider.dart';
 import 'package:click_plus_plus/widgets/custom_animated_icon.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +20,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _score = 0;
   String _name = "";
-
+  double size = 240;
+  double margin = 20;
   bool _isChanged = false;
   late List<Widget> stackChildren;
 
@@ -29,15 +32,15 @@ class _HomeScreenState extends State<HomeScreen> {
     _getName();
     stackChildren = [
       Container(
-        color: Colors.black,
-        height: 300,
-        width: 300,
+        color: Colors.white10,
+        height: size,
+        width: size,
       ),
       Positioned(
-        bottom: 50,
-        left: 50,
-        right: 50,
-        top: 50,
+        bottom: margin,
+        left: margin,
+        right: margin,
+        top: margin,
         child: CustomRoundButton(
           onPressed: () {
             final myController = TextEditingController();
@@ -71,6 +74,16 @@ class _HomeScreenState extends State<HomeScreen> {
           size: 150, // You can adjust the size as needed
         ),
       ),
+      Positioned(
+          top: 115,
+          bottom: 115,
+          left: 115,
+          right: 115,
+          child: Container(
+            color: Colors.orange,
+            height: 5,
+            width: 5,
+          ))
     ];
   }
 
@@ -135,8 +148,38 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _spawnIcon() {
-    stackChildren
-        .add(Positioned(height: 10, width: 10, child: CustomAnimatedIcon()));
+    int _size = size as int;
+    int _margin = margin as int;
+    _size += _margin;
+    Random random = Random();
+    double random_x = random.nextInt(_size - 60) + 20 as double;
+    double random_y = random.nextInt(_size - 60) + 20 as double;
+    //x1 is the center of the circle, x2 is the point.
+    num item = random_y - (_size / 2);
+    num item2 = random_x - (_size / 2);
+    item = pow(item, 2);
+    item2 = pow(item2, 2);
+    double distance = sqrt(item + item2);
+    double radius = (size / 2);
+    print("Distance: ${distance}");
+    print("Radius: ${radius}");
+    while (distance < radius) {
+      random_x = random.nextInt(_size - 60) + 20 as double;
+      random_y = random.nextInt(_size - 60) + 20 as double;
+      //x1 is the center of the circle, x2 is the point.
+      item = random_y - (_size / 2);
+      item2 = random_x - (_size / 2);
+      item = pow(item, 2);
+      item2 = pow(item2, 2);
+      distance = sqrt(item + item2);
+      // radius = size - margin;
+      print("Distance: ${distance}");
+      print("Radius: ${radius}");
+    }
+    print("X: ${random_x}");
+    print("Y: ${random_y}");
+    stackChildren.add(
+        Positioned(top: random_y, left: random_x, child: CustomAnimatedIcon()));
   }
 
   @override

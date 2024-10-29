@@ -51,10 +51,7 @@ class CustomAnimatedIconState extends State<CustomAnimatedIcon>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _movementController,
-      child: const Icon(
-        Icons.add,
-        color: Colors.red,
-      ),
+      child: const Icon(Icons.add, color: Colors.red, size: 20),
       builder: (BuildContext context, child) {
         return Opacity(
           opacity: 1 - _opacityController.value,
