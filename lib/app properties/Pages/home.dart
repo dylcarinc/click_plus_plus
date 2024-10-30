@@ -74,16 +74,6 @@ class _HomeScreenState extends State<HomeScreen> {
           size: 150, // You can adjust the size as needed
         ),
       ),
-      Positioned(
-          top: 115,
-          bottom: 115,
-          left: 115,
-          right: 115,
-          child: Container(
-            color: Colors.orange,
-            height: 5,
-            width: 5,
-          ))
     ];
   }
 
@@ -160,9 +150,11 @@ class _HomeScreenState extends State<HomeScreen> {
     item = pow(item, 2);
     item2 = pow(item2, 2);
     double distance = sqrt(item + item2);
-    double radius = (size / 2);
-    print("Distance: ${distance}");
-    print("Radius: ${radius}");
+    double radius = (size / 2) + 10; //the + 10 is for the animated icon size.
+    // print("Distance: ${distance}");
+    // print("Radius: ${radius}");
+
+    //this ensures that the spawn location is outside the circle but within the containter.
     while (distance < radius) {
       random_x = random.nextInt(_size - 60) + 20 as double;
       random_y = random.nextInt(_size - 60) + 20 as double;
@@ -172,14 +164,21 @@ class _HomeScreenState extends State<HomeScreen> {
       item = pow(item, 2);
       item2 = pow(item2, 2);
       distance = sqrt(item + item2);
-      // radius = size - margin;
-      print("Distance: ${distance}");
-      print("Radius: ${radius}");
+      // print("Distance: ${distance}");
+      // print("Radius: ${radius}");
     }
-    print("X: ${random_x}");
-    print("Y: ${random_y}");
-    stackChildren.add(
-        Positioned(top: random_y, left: random_x, child: CustomAnimatedIcon()));
+    // print("X: ${random_x}");
+    // print("Y: ${random_y}");
+
+    //this section helps the icons spawn more evenly around the button
+    int a = random.nextInt(10);
+    if (a > 5) {
+      stackChildren.add(Positioned(
+          top: random_y, left: random_x, child: CustomAnimatedIcon()));
+    } else {
+      stackChildren.add(Positioned(
+          bottom: random_y, right: random_x, child: CustomAnimatedIcon()));
+    }
   }
 
   @override

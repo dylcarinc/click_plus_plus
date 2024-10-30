@@ -35,16 +35,6 @@ class CustomAnimatedIconState extends State<CustomAnimatedIcon>
     _opacityController =
         AnimationController(vsync: this, duration: const Duration(seconds: 2));
     _opacityController.forward();
-
-    _opacityController.addListener(() {
-      // if (_opacityController.value > 0.5) {
-      //   _opacityController.reverse();
-      // }
-    });
-
-    _opacityController.addStatusListener((status) {
-      print(status);
-    });
   }
 
   @override
