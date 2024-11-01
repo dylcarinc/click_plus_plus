@@ -1,6 +1,8 @@
+
 import 'dart:async';
 import 'dart:math';
 import 'package:click_plus_plus/app%20properties/theme_provider.dart';
+import 'package:click_plus_plus/widgets/custom_animated_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:click_plus_plus/app properties/routing/app_router.dart';
@@ -25,6 +27,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int multProgress = 0; // Current progress towards a multiplier
   int multGoal = 100; // Goal for multProgress
   String _name = "";
+  double size = 240;
+  double margin = 20;
 
   List<Color> colors = [
     Colors.black,
@@ -35,8 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
     Color.fromARGB(255, 8, 121, 136),
     Colors.pink
   ];
-
   bool _isChanged = false;
+  late List<Widget> stackChildren;
 
   Timer _resetTimer = Timer(Duration.zero, (){});
   late Timer _colorTimer;
@@ -46,6 +50,51 @@ class _HomeScreenState extends State<HomeScreen> {
     _colorTimer = Timer.periodic(const Duration(milliseconds: 50), nextColor);
     _loadScore();
     _getName();
+    stackChildren = [
+      Container(
+        color: Colors.white10,
+        height: size,
+        width: size,
+      ),
+      Positioned(
+        bottom: margin,
+        left: margin,
+        right: margin,
+        top: margin,
+        child: CustomRoundButton(
+          onPressed: () {
+            final myController = TextEditingController();
+            if (_name == "false" || _name == "") {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text("Please enter your name."),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: myController,
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          _setName(myController.text);
+                          Navigator.pop(context);
+                        },
+                        child: const Text("Set Name"),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            } else {
+              _incrementScore();
+              _spawnIcon();
+            }
+          },
+          size: 150, // You can adjust the size as needed
+        ),
+      ),
+    ];
   }
 
 
@@ -148,6 +197,50 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _spawnIcon() {
+    int _size = size as int;
+    int _margin = margin as int;
+    _size += _margin;
+    Random random = Random();
+    double random_x = random.nextInt(_size - 60) + 20 as double;
+    double random_y = random.nextInt(_size - 60) + 20 as double;
+    //x1 is the center of the circle, x2 is the point.
+    num item = random_y - (_size / 2);
+    num item2 = random_x - (_size / 2);
+    item = pow(item, 2);
+    item2 = pow(item2, 2);
+    double distance = sqrt(item + item2);
+    double radius = (size / 2) + 10; //the + 10 is for the animated icon size.
+    // print("Distance: ${distance}");
+    // print("Radius: ${radius}");
+
+    //this ensures that the spawn location is outside the circle but within the containter.
+    while (distance < radius) {
+      random_x = random.nextInt(_size - 60) + 20 as double;
+      random_y = random.nextInt(_size - 60) + 20 as double;
+      //x1 is the center of the circle, x2 is the point.
+      item = random_y - (_size / 2);
+      item2 = random_x - (_size / 2);
+      item = pow(item, 2);
+      item2 = pow(item2, 2);
+      distance = sqrt(item + item2);
+      // print("Distance: ${distance}");
+      // print("Radius: ${radius}");
+    }
+    // print("X: ${random_x}");
+    // print("Y: ${random_y}");
+
+    //this section helps the icons spawn more evenly around the button
+    int a = random.nextInt(10);
+    if (a > 5) {
+      stackChildren.add(Positioned(
+          top: random_y, left: random_x, child: CustomAnimatedIcon()));
+    } else {
+      stackChildren.add(Positioned(
+          bottom: random_y, right: random_x, child: CustomAnimatedIcon()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -219,37 +312,9 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 40),
-            CustomRoundButton(
-              onPressed: () {
-                final myController = TextEditingController();
-                if (_name == "false" || _name == "") {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) => AlertDialog(
-                      title: const Text("Please enter your name."),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextField(
-                            controller: myController,
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              _setName(myController.text);
-                              Navigator.pop(context);
-                            },
-                            child: const Text("Set Name"),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                } else {
-                  _incrementScore();
-                }
-              },
-              size: 150, // You can adjust the size as needed
+            // SizedBox(height: 40),
+            Stack(
+              children: stackChildren,
             ),
             Container(width: multProgress.toDouble() * 3,height: 50,decoration: BoxDecoration(color: colors[colorIndex], border: Border.all(color: Colors.black),borderRadius: BorderRadius.circular(10))),
             Text(
