@@ -198,12 +198,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _spawnIcon() {
-    int _size = size as int;
-    int _margin = margin as int;
+    int _size = size.toInt();
+    int _margin = margin.toInt();
     _size += _margin;
     Random random = Random();
-    double random_x = random.nextInt(_size - 60) + 20 as double;
-    double random_y = random.nextInt(_size - 60) + 20 as double;
+    double random_x = (random.nextInt(_size - 60) + 20 ).toDouble();
+    double random_y = (random.nextInt(_size - 60) + 20).toDouble();
     //x1 is the center of the circle, x2 is the point.
     num item = random_y - (_size / 2);
     num item2 = random_x - (_size / 2);
@@ -216,8 +216,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     //this ensures that the spawn location is outside the circle but within the containter.
     while (distance < radius) {
-      random_x = random.nextInt(_size - 60) + 20 as double;
-      random_y = random.nextInt(_size - 60) + 20 as double;
+      random_x = (random.nextInt(_size - 60) + 20).toDouble();
+      random_y = (random.nextInt(_size - 60) + 20).toDouble();
       //x1 is the center of the circle, x2 is the point.
       item = random_y - (_size / 2);
       item2 = random_x - (_size / 2);
