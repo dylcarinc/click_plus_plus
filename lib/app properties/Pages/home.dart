@@ -1,6 +1,9 @@
 
 import 'dart:async';
+import 'dart:async';
+import 'dart:core';
 import 'dart:math';
+import 'package:click_plus_plus/app%20properties/Pages/store.dart';
 import 'package:click_plus_plus/app%20properties/theme_provider.dart';
 import 'package:click_plus_plus/widgets/custom_animated_icon.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +22,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
   DateTime _dateTime = DateTime.now();
   int _lastClick = 0;
   int colorIndex = 0;
@@ -29,6 +33,26 @@ class _HomeScreenState extends State<HomeScreen> {
   String _name = "";
   double size = 240;
   double margin = 20;
+
+  //add 
+  CustomAnimatedIcon currentAnimation = CustomAnimatedIcon(color: Colors.red, name: "Plus", shape: Icons.add, price: 0,purchased: true,); 
+  List<CustomAnimatedIcon> purchasedAnimations = [];
+  
+  //add
+  final List<CustomAnimatedIcon> allAnimations = [
+    CustomAnimatedIcon(color: Colors.red, name: "Plus", shape: Icons.add, price: 0,purchased: true,),
+    CustomAnimatedIcon(color: const Color.fromARGB(255, 247, 222, 0), name: "Sparkles", shape: Icons.auto_awesome, price: 50,purchased: false),
+    CustomAnimatedIcon(color: const Color.fromARGB(255, 0, 208, 255), name: "Bubbles", shape: Icons.bubble_chart_outlined, price: 100,purchased: false),
+    CustomAnimatedIcon(color: Colors.pink, name: "Heart", shape: Icons.favorite, price: 300,purchased: false),
+    CustomAnimatedIcon(color: Colors.green, name: "Fart", shape: Icons.air, price: 500,purchased: false,),
+    CustomAnimatedIcon(color: Colors.grey, name: "Apple enjoyer", shape: Icons.apple, price: 1000,purchased: false,),
+    CustomAnimatedIcon(color: Color.fromARGB(255, 61, 220, 132), name: "Android enjoyer", shape: Icons.android, price: 1000,purchased: false,),
+    CustomAnimatedIcon(color: Colors.yellow, name: "Happy", shape: Icons.sentiment_satisfied_alt_outlined, price: 2000,purchased: false),
+    CustomAnimatedIcon(color: const Color.fromARGB(255, 40, 33, 243), name: "Sad", shape: Icons.sentiment_dissatisfied_outlined, price: 2000,purchased: false),
+    CustomAnimatedIcon(color: Colors.purple, name: "Gamer", shape: Icons.sports_esports, price: 5000,purchased: false),
+    
+    
+  ];
 
   List<Color> colors = [
     Colors.black,
@@ -44,10 +68,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Timer _resetTimer = Timer(Duration.zero, (){});
   late Timer _colorTimer;
+
+   
+
   @override
   void initState() {
     super.initState();
     _colorTimer = Timer.periodic(const Duration(milliseconds: 50), nextColor);
+    _loadPurchasedAnimations();
     _loadScore();
     _getName();
     stackChildren = [
@@ -97,19 +125,22 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
   }
 
+  
 
-  void nextColor(Timer timer) async{
-    setState(() {
-      if(currentMultiplier > 1) {
-        colorIndex = colorIndex + 1;
-        if(colorIndex >= colors.length) {
-          colorIndex = 1;
-        }
-      } else {
-        colorIndex = 0;
-      }
-    });
+Future<void> _loadPurchasedAnimations() async {
+  final user = firebase.authInstance.currentUser;
+  if (user != null) {
+    final doc = await firebase.firestoreInstance.collection('users').doc(user.uid).get();
+    if (doc.exists && doc.data()?['purchasedAnimations'] != null) {
+      List<String> purchasedNames = List<String>.from(doc.data()?['purchasedAnimations']);
+      setState(() {
+        purchasedAnimations = allAnimations.where((icon) => purchasedNames.contains(icon.name)).toList();
+      });
+    }
   }
+}
+
+
   Future<void> _loadScore() async {
     final user = firebase.authInstance.currentUser;
     if (user != null) {
@@ -196,7 +227,39 @@ class _HomeScreenState extends State<HomeScreen> {
       _name = name;
     }
   }
+  
+  void _updateAnimation(CustomAnimatedIcon newAnimation) {
+    setState(() {
+      currentAnimation = newAnimation;
+    });
+  }
 
+  void _updatePoints(int amount) {
+    setState(() {
+      _score += amount;
+    });
+  }
+
+  void _purchaseAnimation(CustomAnimatedIcon animation) {
+    if (!purchasedAnimations.contains(animation)) {
+      setState(() {
+        purchasedAnimations.add(animation);
+      });
+    }
+  }
+    
+  void nextColor(Timer timer) async{
+    setState(() {
+      if(currentMultiplier > 1) {
+        colorIndex = colorIndex + 1;
+        if(colorIndex >= colors.length) {
+          colorIndex = 1;
+        }
+      } else {
+        colorIndex = 0;
+      }
+    });}
+    
   void _spawnIcon() {
     int _size = size.toInt();
     int _margin = margin.toInt();
@@ -234,16 +297,38 @@ class _HomeScreenState extends State<HomeScreen> {
     int a = random.nextInt(10);
     if (a > 5) {
       stackChildren.add(Positioned(
-          top: random_y, left: random_x, child: CustomAnimatedIcon()));
+          top: random_y, left: random_x, child: currentAnimation));
     } else {
       stackChildren.add(Positioned(
-          bottom: random_y, right: random_x, child: CustomAnimatedIcon()));
+          bottom: random_y, right: random_x, child: currentAnimation));
     }
+
+    
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Store(
+                onIconUpdate: _updateAnimation,
+                points: _score,
+                onPointUpdate: _updatePoints,
+                onPurchase: _purchaseAnimation,
+                purchasedIcons: purchasedAnimations,
+                allIcons: allAnimations,
+              ),
+            ),
+          );
+        },
+        child: Icon(Icons.store), // Optional: Add an icon for clarity
+      ),
+
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: const Text('Home'),
@@ -325,6 +410,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+      
     );
   }
 }

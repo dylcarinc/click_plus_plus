@@ -1,6 +1,23 @@
 import 'package:flutter/material.dart';
 
 class CustomAnimatedIcon extends StatefulWidget {
+  final Color color;
+  final String name;
+  final IconData shape;
+  final int price;
+  final bool purchased;
+  
+
+  const CustomAnimatedIcon({
+    super.key,
+    required this.color, 
+    required this.name, 
+    required this.shape, 
+    required this.price,
+    required this.purchased
+    
+  });
+
   @override
   State<StatefulWidget> createState() {
     return CustomAnimatedIconState();
@@ -41,7 +58,7 @@ class CustomAnimatedIconState extends State<CustomAnimatedIcon>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _movementController,
-      child: const Icon(Icons.add, color: Colors.red, size: 20),
+      child: Icon(widget.shape, color: widget.color, size: 20),
       builder: (BuildContext context, child) {
         return Opacity(
           opacity: 1 - _opacityController.value,
