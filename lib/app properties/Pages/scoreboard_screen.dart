@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:click_plus_plus/app properties/routing/app_router.dart';
@@ -72,6 +74,7 @@ class ScoreboardScreen extends StatelessWidget {
                 final doc = filteredDocs[index];
                 final data = doc.data() as Map<String, dynamic>;
                 return ListTile(
+                  leading: UserAvatar(),
                   title: Text(data['name'] ?? 'Anonymous'),
                   trailing: Text(data['score'].toString()),
                   onTap: () => AppRouter.navigateTo(
