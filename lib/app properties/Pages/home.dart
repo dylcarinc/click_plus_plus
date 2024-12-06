@@ -3,9 +3,11 @@ import 'dart:async';
 import 'dart:async';
 import 'dart:core';
 import 'dart:math';
+import 'package:camera/camera.dart';
 import 'package:click_plus_plus/app%20properties/Pages/store.dart';
 import 'package:click_plus_plus/app%20properties/theme_provider.dart';
 import 'package:click_plus_plus/widgets/custom_animated_icon.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:click_plus_plus/app properties/routing/app_router.dart';
@@ -31,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int multProgress = 0; // Current progress towards a multiplier
   int multGoal = 100; // Goal for multProgress
   String _name = "";
+  String? _pic = null as String?;
   double size = 240;
   double margin = 20;
 
@@ -69,12 +72,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Timer _resetTimer = Timer(Duration.zero, (){});
   late Timer _colorTimer;
 
+  
+
    
 
   @override
   void initState() {
     super.initState();
     _colorTimer = Timer.periodic(const Duration(milliseconds: 50), nextColor);
+    _getPic();
+    //_setPic(_pic);
     _loadPurchasedAnimations();
     _loadScore();
     _getName();
@@ -156,6 +163,8 @@ Future<void> _loadPurchasedAnimations() async {
     }
   }
 
+  
+
   Future<void> _getName() async {
     final user = firebase.authInstance.currentUser;
     if (user != null) {
@@ -218,6 +227,7 @@ Future<void> _loadPurchasedAnimations() async {
     }
   }
 
+  
   Future<void> _setName(String name) async {
     final user = firebase.authInstance.currentUser;
     if (user != null) {
@@ -306,6 +316,25 @@ Future<void> _loadPurchasedAnimations() async {
     
 
   }
+  //set state to update picture
+  //have user enter url
+  Future<void> _setPic(String? pic) async {
+    final user = firebase.authInstance.currentUser;
+    if (user != null) {
+      FirebaseAuth.instance.currentUser?.updatePhotoURL(pic);
+      _pic = FirebaseAuth.instance.currentUser?.photoURL;
+    }
+    }
+  
+  
+
+  Future<void> _getPic() async {
+    final user = firebase.authInstance.currentUser;
+
+    if (user != null) {
+      _pic = FirebaseAuth.instance.currentUser?.photoURL;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -350,17 +379,56 @@ Future<void> _loadPurchasedAnimations() async {
                     Navigator.push(
                         context,
                         MaterialPageRoute<ProfileScreen>(
+
                             builder: (context) => ProfileScreen(
-                                    appBar: AppBar(
-                                      title: const Text('User Profile'),
-                                    ),
-                                    actions: [
-                                      SignedOutAction((context) {
-                                        Navigator.of(context).pop();
-                                      })
-                                    ])));
-                }
-              },
+                              //avatar: UserAvatar(
+                                //auth: FirebaseAuth.instance
+                              //),
+                              appBar: AppBar(
+                                title: const Text('User Profile'),                                
+                              ),
+                              actions: [
+                                SignedOutAction((context) {
+                                Navigator.of(context).pop();
+                                })
+                              ],
+                              children: [
+                                FloatingActionButton(
+                                  child: Text('Set Profile Pic'),
+                                
+          onPressed: () {
+            final myController = TextEditingController();
+            
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text("Enter a photo URL"),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: myController,
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          if(myController.text.isNotEmpty)
+                          _setPic(myController.text);
+                          Navigator.pop(context);
+                        },
+                        child: const Text("Set Profile Pic"),
+                      )
+                    ],
+                  ),
+                ),
+              );
+             
+          },
+        ),
+                                          
+                                      
+                                    ])
+                                  ));
+                                }},
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                     PopupMenuItem(
                       value: 'themeToggle',
