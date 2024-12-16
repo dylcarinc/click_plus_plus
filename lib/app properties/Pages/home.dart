@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _colorTimer = Timer.periodic(const Duration(milliseconds: 50), nextColor);
     _getPic();
-    //_setPic(_pic);
+    _setPic(_pic);
     _loadPurchasedAnimations();
     _loadScore();
     _getName();
@@ -318,15 +318,25 @@ Future<void> _loadPurchasedAnimations() async {
   }
   //set state to update picture
   //have user enter url
+  //check if url will work before storing it in firebase
+  Future<bool> _testPic(String? pic) async {
+
+    return false;
+
+  }
   Future<void> _setPic(String? pic) async {
     final user = firebase.authInstance.currentUser;
     if (user != null) {
+      setState(){
+      //actual code
       FirebaseAuth.instance.currentUser?.updatePhotoURL(pic);
+
+    //used to reset profiles in order to fix bugs
+    //FirebaseAuth.instance.currentUser?.updatePhotoURL('https://www.booksie.com/files/profiles/22/mr-anonymous_230x230.png?0000-00-00%2000:00:00');
       _pic = FirebaseAuth.instance.currentUser?.photoURL;
     }
     }
-  
-  
+    }
 
   Future<void> _getPic() async {
     final user = firebase.authInstance.currentUser;

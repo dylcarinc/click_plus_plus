@@ -69,12 +69,15 @@ class ScoreboardScreen extends StatelessWidget {
             }).toList();
 
             return ListView.builder(
+    
               itemCount: filteredDocs.length,
               itemBuilder: (context, index) {
                 final doc = filteredDocs[index];
                 final data = doc.data() as Map<String, dynamic>;
+
                 return ListTile(
-                  leading: UserAvatar(),
+                  //useravatar displays current users avatar
+                  //leading: UserAvatar(),
                   title: Text(data['name'] ?? 'Anonymous'),
                   trailing: Text(data['score'].toString()),
                   onTap: () => AppRouter.navigateTo(

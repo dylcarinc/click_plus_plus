@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:click_plus_plus/firebase_interface.dart';
 
@@ -84,9 +86,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               snapshot.data!.data() as Map<String, dynamic>;
 
           return Center(
+            
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                //useravatar displays current users avatar
+                //UserAvatar(key: widget.userId as Key),
                 Text(data['name'] ?? 'Anonymous',
                     style: Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 20),
